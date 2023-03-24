@@ -15,52 +15,37 @@ spec:
   template:
     metadata:
       annotations:
+        apps.tanzu.vmware.com/live-update: "true"
+        autoscaling.knative.dev/maxScale: "1"
         autoscaling.knative.dev/minScale: "1"
         boot.spring.io/version: 2.6.2
         conventions.carto.run/applied-conventions: |-
           appliveview-sample/app-live-view-appflavour-check
+          developer-conventions/live-update-convention
+          developer-conventions/add-source-image-label
           spring-boot-convention/auto-configure-actuators-check
           spring-boot-convention/spring-boot
           spring-boot-convention/spring-boot-graceful-shutdown
           spring-boot-convention/spring-boot-web
-          spring-boot-convention/spring-boot-actuator
-          spring-boot-convention/spring-boot-actuator-probes
           spring-boot-convention/app-live-view-appflavour-check
-          spring-boot-convention/app-live-view-connector-boot
-          spring-boot-convention/app-live-view-appflavours-boot
+        developer.apps.tanzu.vmware.com/image-source-digest: index.docker.io/fynesy/tdemo1-default-bundle:latest@sha256:22eb9587d3e49c969d96f2d4e83f829be52fa84d3561a6a20ae082303cfee540
         developer.conventions/target-containers: workload
       labels:
         app.kubernetes.io/component: run
         app.kubernetes.io/part-of: tdemo1
-        apps.tanzu.vmware.com/auto-configure-actuators: "false"
         apps.tanzu.vmware.com/workload-type: web
         carto.run/workload-name: tdemo1
         conventions.carto.run/framework: spring-boot
-        tanzu.app.live.view: "true"
-        tanzu.app.live.view.application.actuator.path: actuator
-        tanzu.app.live.view.application.actuator.port: "8080"
-        tanzu.app.live.view.application.flavours: spring-boot
-        tanzu.app.live.view.application.name: tdemo1
     spec:
       containers:
       - env:
         - name: JAVA_TOOL_OPTIONS
-          value: -Dmanagement.endpoint.health.probes.add-additional-paths="true" -Dmanagement.health.probes.enabled="true" -Dserver.port="8080" -Dserver.shutdown.grace-period="24s"
-        image: index.docker.io/fynesy/tdemo1-default@sha256:6a2cdff999d5a5fcbc0dbbc68102648a7765fd53e590f34a46a41a51c90030c1
-        livenessProbe:
-          httpGet:
-            path: /livez
-            port: 8080
-            scheme: HTTP
+          value: -Dserver.port="8080" -Dserver.shutdown.grace-period="24s"
+        image: index.docker.io/fynesy/tdemo1-default@sha256:594ad9a5c2cc66c9f9031dfe607f22d308f55fbe9d8ec2d224905d59bfd594a8
         name: workload
         ports:
         - containerPort: 8080
           protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /readyz
-            port: 8080
-            scheme: HTTP
         resources: {}
         securityContext:
           runAsUser: 1000
